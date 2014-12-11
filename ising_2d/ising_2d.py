@@ -122,35 +122,37 @@ def main():
 
     # Candidate has already been constructed
     # BEGIN THE MARKOV CHAIN
-    for i in range(user_steps*(dimension^2)):
+    for i in range(user_steps):
         print("Step {}".format(i))
 
-        row = random.randint(0, dimension - 1)
-        col = random.randint(0, dimension - 1)
-        deltaE = dE(spin_array, row, col)
+        for j in range(dimension**2):
+            row = random.randint(0, dimension - 1)
+            col = random.randint(0, dimension - 1)
+            deltaE = dE(spin_array, row, col)
 
-        print("delta E = {}".format(deltaE))
+            print("delta E = {}".format(deltaE))
 
-        if deltaE <= 0:
-            if spin_array[row][col] == 1:
-                spin_array[row][col] == -1
-                tiles[row][col].changeFillColor((0, 0, 0))
-            else:
-                spin_array[row][col] == 1
-                tiles[row][col].changeFillColor((255, 255, 255))
-        else:
-            rand = random.uniform(0, 1)
-            if rand < math.exp(-deltaE/temperature):
-                print(math.exp(-deltaE/temperature))
-
+            if deltaE <= 0:
                 if spin_array[row][col] == 1:
                     spin_array[row][col] == -1
                     tiles[row][col].changeFillColor((0, 0, 0))
                 else:
                     spin_array[row][col] == 1
                     tiles[row][col].changeFillColor((255, 255, 255))
+            else:
+                rand = random.uniform(0, 1)
+                if rand < math.exp(-deltaE/temperature):
+                    print('Boltzmann factor: {}'.format(
+                        math.exp(-deltaE/temperature)))
 
-        canvas.display()
+                    if spin_array[row][col] == 1:
+                        spin_array[row][col] == -1
+                        tiles[row][col].changeFillColor((0, 0, 0))
+                    else:
+                        spin_array[row][col] == 1
+                        tiles[row][col].changeFillColor((255, 255, 255))
+
+            canvas.display()
 
 
 if __name__ == '__main__':
