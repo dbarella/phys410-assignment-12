@@ -40,17 +40,17 @@ def printlist(list):#print candidate 2D list in letters
 def dE(configuration, i, j):
     """calculate the energy difference if flipping s(i, j)"""
     size = len(configuration)
-    ua, ub = i-1, j
-    da, db = i+1, j
-    la, lb = i, j-1
-    ra, rb = i, j+1
+    ua, ub = i - 1, j
+    da, db = i + 1, j
+    la, lb = i, j - 1
+    ra, rb = i, j + 1
     if i == 0:
-        ua = size-1
-    if i == size-1:
+        ua = size - 1
+    if i == size - 1:
         da = 0
     if j == 0:
-        lb = size-1
-    if j == size-1:
+        lb = size - 1
+    if j == size - 1:
         rb = 0
     upNeighbour = configuration[ua][ub]
     downNeighbour = configuration[da][db]
@@ -65,7 +65,7 @@ def setup_canvas(spin_array):
     """Set up the canvas and tile array.
 
     Args:
-        spin_array (list of (list of int)): A two-dimensional array representing
+        spin_array (list of (list of int)): A two - dimensional array representing
         the spins of the paramagnet sites.
 
     Returns (tuple of picture.Picture, (list of (list of picture.Rectangle))):
@@ -115,8 +115,8 @@ def main():
     for i in range(user_steps*(dimension^2)):
         print("Step {}".format(i))
 
-        row = random.randint(0, dimension-1)
-        col = random.randint(0, dimension-1)
+        row = random.randint(0, dimension - 1)
+        col = random.randint(0, dimension - 1)
         deltaE = dE(spin_array, row, col)
 
         print("delta E = {}".format(deltaE))
