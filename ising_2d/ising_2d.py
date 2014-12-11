@@ -7,7 +7,10 @@ import random
 import sys
 
 
-__author__ = 'simoninoc@gmail.com (Simon Lin)'
+__author__ = [
+    'simoninoc@gmail.com (Simon Lin)',
+    'dbarella@oberlin.edu (Dan Barella)',
+    ]
 
 
 def randomCandidate(size):#generate candidate configuration of size*size
