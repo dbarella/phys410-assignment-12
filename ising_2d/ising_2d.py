@@ -1,3 +1,5 @@
+# /usr/bin/env python
+# coding: utf-8
 """Simulate a 2-dimensional Ising paramagnet."""
 
 
@@ -11,6 +13,10 @@ __author__ = [
     'simoninoc@gmail.com (Simon Lin)',
     'dbarella@oberlin.edu (Dan Barella)',
     ]
+
+
+# Constants
+PROMPT = False
 
 
 def randomCandidate(size):
@@ -43,7 +49,7 @@ def printlist(list):
         print(' '.join(row))
 
 
-def dE(configuration, i, j):
+def dE(configuration, magnetic_field, i, j):
     """Calculate the energy difference of flipping s(i, j)."""
     size = len(configuration)
 
@@ -66,8 +72,12 @@ def dE(configuration, i, j):
     leftNeighbour = configuration[la][lb]
     rightNeighbour = configuration[ra][rb]
 
-    deltaE = 2 * configuration[i][j] * (upNeighbour + downNeighbour
-                                        + leftNeighbour + rightNeighbour)
+    neighbor_spins = (upNeighbour + downNeighbour
+                      + leftNeighbour + rightNeighbour)
+
+    # The 2 factor comes from flipping one spin
+    deltaE = 2 * configuration[i][j] * neighbor_spins
+
     return deltaE
 
 
@@ -90,7 +100,7 @@ def setup_canvas(spin_array):
     for i in range(len(spin_array)):
         tiles.append([])
         for j in range(len(spin_array[i])):
-            tiles[i].append(" ")
+            tiles[i].append(None)
     for i in range(len(spin_array)):
         for j in range(len(spin_array[i])):
             tiles[i][j]=canvas.drawRectFill(i*10, j*10, 50, 50)
@@ -102,11 +112,22 @@ def setup_canvas(spin_array):
     return canvas, tiles
 
 
+def flip_spin(spin_array, tiles, row, col):
+    """Flips the spin at (row, col) in spin_array."""
+    if spin_array[row][col] == 1:
+        spin_array[row][col] == -1
+        tiles[row][col].changeFillColor((0, 0, 0))
+    else:
+        spin_array[row][col] == 1
+        tiles[row][col].changeFillColor((255, 255, 255))
+
+
 def main():
-    dimension = int(input("What's the size? "))
-    temperature = float(input("Temperature? "))
-    user_steps = int(input("How many steps? "))
-    candidate = int(input("Which candidate do you want to start with? "
+    dimension = int(raw_input("Input size: "))
+    temperature = float(raw_input("Temperature [ϵ/kB]: "))
+    magnetic_field = float(raw_input("Magnetic Field [spin]: "))
+    user_steps = int(raw_input("Steps: "))
+    candidate = int(raw_input("Which candidate do you want to start with? "
         "[1: Random candidate, 2: Most Energetic Candidate]: "))
 
     if candidate == 1:
@@ -123,36 +144,33 @@ def main():
     # Candidate has already been constructed
     # BEGIN THE MARKOV CHAIN
     for i in range(user_steps):
+        #if PROMPT:
         print("Step {}".format(i))
 
         for j in range(dimension**2):
             row = random.randint(0, dimension - 1)
             col = random.randint(0, dimension - 1)
-            deltaE = dE(spin_array, row, col)
+            deltaE = dE(spin_array, magnetic_field, row, col)
 
-            print("delta E = {}".format(deltaE))
+            if PROMPT:
+                print("delta E = {}".format(deltaE))
 
-            if deltaE <= 0:
-                if spin_array[row][col] == 1:
-                    spin_array[row][col] == -1
-                    tiles[row][col].changeFillColor((0, 0, 0))
-                else:
-                    spin_array[row][col] == 1
-                    tiles[row][col].changeFillColor((255, 255, 255))
+            if deltaE <= 0:  # If flipping this spin decreases energy, flip it
+                flip_spin(spin_array, tiles, row, col)
             else:
+                # Otherwise the Boltzmann factor gives the probability of
+                # flipping
                 rand = random.uniform(0, 1)
                 if rand < math.exp(-deltaE/temperature):
-                    print('Boltzmann factor: {}'.format(
-                        math.exp(-deltaE/temperature)))
+                    if PROMPT:
+                        print('Boltzmann factor: {}'.format(
+                            math.exp(-deltaE/temperature)))
 
-                    if spin_array[row][col] == 1:
-                        spin_array[row][col] == -1
-                        tiles[row][col].changeFillColor((0, 0, 0))
-                    else:
-                        spin_array[row][col] == 1
-                        tiles[row][col].changeFillColor((255, 255, 255))
+                    flip_spin(spin_array, tiles, row, col)
 
             canvas.display()
+
+    raw_input('Hit enter to finish.')  # Lock the final canvas until the user hits enter
 
 
 if __name__ == '__main__':
