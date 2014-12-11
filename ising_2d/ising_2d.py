@@ -18,7 +18,7 @@ def randomCandidate(size):
     playground=[]
     for i in range(size):
         playground.append([])
-        for j in range (size):
+        for j in range(size):
             dimension = random.randint(0, 1)
             if dimension == 0:
                 playground[i].append(1)
@@ -32,7 +32,7 @@ def mostEnergetic(size):
     playground=[]
     for i in range(size):
         playground.append([])
-        for j in range (size):
+        for j in range(size):
             playground[i].append(1)
     return playground
 
