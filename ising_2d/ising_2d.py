@@ -1,4 +1,4 @@
-"""Simulate a 12x12 2-D Ising paramagnet."""
+"""Simulate a 12x12 Ising paramagnet."""
 
 
 import random
