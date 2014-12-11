@@ -1,4 +1,4 @@
-"""Simulate candidate 12x12 Ising paramagnet."""
+"""Simulate a 2-dimensional Ising paramagnet."""
 
 
 import math
