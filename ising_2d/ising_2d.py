@@ -76,7 +76,7 @@ def dE(configuration, magnetic_field, i, j):
                       + leftNeighbour + rightNeighbour)
 
     # The 2 factor comes from flipping one spin
-    deltaE = 2 * configuration[i][j] * neighbor_spins
+    deltaE = (2 * configuration[i][j] * neighbor_spins) # * magnetic_field
 
     return deltaE
 
