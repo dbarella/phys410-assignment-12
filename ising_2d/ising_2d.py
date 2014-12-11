@@ -13,7 +13,8 @@ __author__ = [
     ]
 
 
-def randomCandidate(size):#generate candidate configuration of size*size
+def randomCandidate(size):
+    """Generate random candidate configuration of size*size."""
     playground=[]
     for i in range(size):
         playground.append([])
@@ -27,6 +28,7 @@ def randomCandidate(size):#generate candidate configuration of size*size
 
 
 def mostEnergetic(size):
+    """Generate most energetic candidate configuration of size*size."""
     playground=[]
     for i in range(size):
         playground.append([])
@@ -35,18 +37,21 @@ def mostEnergetic(size):
     return playground
 
 
-def printlist(list):#print candidate 2D list in letters
+def printlist(list):
+    """Print candidate 2D list in letters."""
     for row in range(list):
         print(' '.join(row))
 
 
 def dE(configuration, i, j):
-    """calculate the energy difference if flipping s(i, j)"""
+    """Calculate the energy difference of flipping s(i, j)."""
     size = len(configuration)
+
     ua, ub = i - 1, j
     da, db = i + 1, j
     la, lb = i, j - 1
     ra, rb = i, j + 1
+
     if i == 0:
         ua = size - 1
     if i == size - 1:
@@ -55,12 +60,14 @@ def dE(configuration, i, j):
         lb = size - 1
     if j == size - 1:
         rb = 0
+
     upNeighbour = configuration[ua][ub]
     downNeighbour = configuration[da][db]
     leftNeighbour = configuration[la][lb]
     rightNeighbour = configuration[ra][rb]
-    deltaE = 2 * configuration[i][j] * (
-        upNeighbour + downNeighbour + leftNeighbour + rightNeighbour)
+
+    deltaE = 2 * configuration[i][j] * (upNeighbour + downNeighbour
+                                        + leftNeighbour + rightNeighbour)
     return deltaE
 
 
