@@ -1,10 +1,11 @@
-from __future__ import print_function
-import sys
-
 """Simulation of DNA Denaturation for Statistical Mechanics Fall 2014.
 
 Runs the Metropolis algorithm and spits out... something. Not sure what yet.
 """
+
+
+from __future__ import print_function
+import sys
 
 
 # In the order in which we sit in W114
