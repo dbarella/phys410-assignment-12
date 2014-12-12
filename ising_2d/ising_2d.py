@@ -47,9 +47,6 @@ def checkerBoard(size):
                 playground[i].append(1.0 if j%2==0 else -1.0)
             else:
                 playground[i].append(-1.0 if j%2==0 else 1.0)
-
-    # for i in range(size/2):
-    #     playground.append([1.0, -1.0])
     return playground
 
 
@@ -247,7 +244,6 @@ def main():
 
             energy_data.append(energy)
             magnetization_data.append(magnetization)
-            # entropy_data.append(entropy)
 
             if PROMPT:
                 print(energy, magnetization, entropy)
