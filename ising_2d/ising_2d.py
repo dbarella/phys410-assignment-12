@@ -68,7 +68,7 @@ def dE(configuration, magnetic_field, i, j, interaction_energy=1):
                       + leftNeighbour + rightNeighbour)
 
     # The 2 factor comes from flipping one spin
-    deltaE = 2 * configuration[i][j] * neighbor_spins * (
+    deltaE = 2.0 * configuration[i][j] * neighbor_spins * (
         magnetic_field * interaction_energy)
 
     return deltaE
@@ -153,8 +153,13 @@ def main():
             else:
                 # Otherwise the Boltzmann factor gives the probability of
                 # flipping
+                if temperature > 0:
+                    boltzmann_factor = math.exp(-deltaE/temperature)
+                else:
+                    boltzmann_factor = 0.0
+
                 rand = random.uniform(0, 1)
-                if rand < math.exp(-deltaE/temperature):
+                if rand < boltzmann_factor:
                     if PROMPT:
                         print('Boltzmann factor: {}'.format(
                             math.exp(-deltaE/temperature)))
