@@ -23,13 +23,7 @@ def randomCandidate(size):
     """Generate random candidate configuration of size*size."""
     playground=[]
     for i in range(size):
-        playground.append([])
-        for j in range(size):
-            dimension = random.randint(0, 1)
-            if dimension == 0:
-                playground[i].append(1)
-            else:
-                playground[i].append(-1)
+        playground.append([float(random.randint(0, 1)) for _ in range(size)])
     return playground
 
 
@@ -37,9 +31,7 @@ def mostEnergetic(size):
     """Generate most energetic candidate configuration of size*size."""
     playground=[]
     for i in range(size):
-        playground.append([])
-        for j in range(size):
-            playground[i].append(1)
+        playground.append([1.0] * size)
     return playground
 
 
@@ -49,7 +41,7 @@ def printlist(list):
         print(' '.join(row))
 
 
-def dE(configuration, magnetic_field, i, j):
+def dE(configuration, magnetic_field, i, j, interaction_energy=1):
     """Calculate the energy difference of flipping s(i, j)."""
     size = len(configuration)
 
@@ -76,7 +68,8 @@ def dE(configuration, magnetic_field, i, j):
                       + leftNeighbour + rightNeighbour)
 
     # The 2 factor comes from flipping one spin
-    deltaE = (2 * configuration[i][j] * neighbor_spins) # * magnetic_field
+    deltaE = 2 * configuration[i][j] * neighbor_spins * (
+        magnetic_field * interaction_energy)
 
     return deltaE
 
