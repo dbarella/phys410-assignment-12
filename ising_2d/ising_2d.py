@@ -4,6 +4,8 @@
 
 
 import math
+import matplotlib.pyplot as plt
+import numpy as np
 import picture
 import random
 import sys
@@ -68,10 +70,29 @@ def dE(configuration, magnetic_field, i, j, interaction_energy=1):
                       + leftNeighbour + rightNeighbour)
 
     # The 2 factor comes from flipping one spin
-    deltaE = 2.0 * configuration[i][j] * neighbor_spins * (
-        magnetic_field * interaction_energy)
+    deltaE = -2.0 * (
+        (configuration[i][j] * neighbor_spins * interaction_energy) + (
+        (interaction_energy * magnetic_field))
+        )
 
     return deltaE
+
+
+def total_E_M(configuration, magnetic_field, i, j, interaction_energy=1):
+    """Calculate total energy and magnetization of a configuration."""
+    tmp_energy = 0.0
+    tmp_spin = 0.0
+
+    for i, row in enumerate(configuration):
+        for j, site in enumerate(row):
+            tmp_energy += dE(configuration, magnetic_field, i, j,
+                             interaction_energy)
+            tmp_spin += site
+
+    energy = tmp_energy / (len(configuration)**2)
+    magnetization = tmp_spin / (len(configuration)**2)
+
+    return energy/2.0, magnetization
 
 
 def setup_canvas(spin_array):
@@ -107,12 +128,22 @@ def setup_canvas(spin_array):
 
 def flip_spin(spin_array, tiles, row, col):
     """Flips the spin at (row, col) in spin_array."""
-    if spin_array[row][col] == 1:
-        spin_array[row][col] == -1
+    if spin_array[row][col] > 0:
+        spin_array[row][col] = -1.0
         tiles[row][col].changeFillColor((0, 0, 0))
     else:
-        spin_array[row][col] == 1
+        spin_array[row][col] = 1.0
         tiles[row][col].changeFillColor((255, 255, 255))
+
+    return spin_array
+
+
+def update_line(line, y_point):
+    """Updates a line with a new y-datapoint, incrementing x_data by one."""
+    x_data, y_data = line.get_xdata(), line.get_ydata()
+
+    line.set_xdata(np.append(x_data, len(x_data)))
+    line.set_ydata(np.append(y_data, y_point))
 
 
 def main():
@@ -123,6 +154,7 @@ def main():
     candidate = int(raw_input("Which candidate do you want to start with? "
         "[1: Random candidate, 2: Most Energetic Candidate]: "))
 
+    # Set up candidate
     if candidate == 1:
         spin_array = randomCandidate(dimension)
     elif candidate == 2:
@@ -131,10 +163,15 @@ def main():
         print('Invalid candidate.')
         sys.exit(1)
 
+    # Set up picture canvas
     canvas, tiles = setup_canvas(spin_array)
     canvas.display()
 
-    # Candidate has already been constructed
+    # Set up sideline plots
+    fig, ax = plt.subplots()
+    line, = plt.plot([], [])
+    ax.set_ylim(0, 1)
+
     # BEGIN THE MARKOV CHAIN
     for i in range(user_steps):
         #if PROMPT:
@@ -167,6 +204,16 @@ def main():
                     flip_spin(spin_array, tiles, row, col)
 
             canvas.display()
+
+            energy, magnetization = total_E_M(spin_array, magnetic_field,
+                                              row, col)
+            print(energy, magnetization)
+            update_line(line, energy)
+
+            ax.relim()
+            ax.autoscale_view()
+            #import pdb; pdb.set_trace()
+            plt.show(block=False)
 
     raw_input('Hit enter to finish.')  # Lock the final canvas until the user hits enter
 
