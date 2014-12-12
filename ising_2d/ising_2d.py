@@ -70,9 +70,9 @@ def dE(configuration, magnetic_field, i, j, interaction_energy=1):
                       + leftNeighbour + rightNeighbour)
 
     # The 2 factor comes from flipping one spin
-    deltaE = -2.0 * (
+    deltaE = -(
         (configuration[i][j] * neighbor_spins * interaction_energy) + (
-        (interaction_energy * magnetic_field))
+        2.0 * (interaction_energy * magnetic_field))
         )
 
     return deltaE
@@ -89,7 +89,7 @@ def total_E_M(configuration, magnetic_field, i, j, interaction_energy=1):
                              interaction_energy)
             tmp_spin += site
 
-    energy = tmp_energy / (len(configuration)**2)
+    energy = -tmp_energy / (len(configuration)**2)
     magnetization = tmp_spin / (len(configuration)**2)
 
     return energy/2.0, magnetization
@@ -207,15 +207,14 @@ def main():
 
             energy, magnetization = total_E_M(spin_array, magnetic_field,
                                               row, col)
-            print(energy, magnetization)
+            if PROMPT:
+                print(energy, magnetization)
             update_line(line, energy)
 
-            ax.relim()
-            ax.autoscale_view()
-            #import pdb; pdb.set_trace()
-            plt.show(block=False)
-
-    raw_input('Hit enter to finish.')  # Lock the final canvas until the user hits enter
+    ax.relim()
+    ax.autoscale()
+    ax.autoscale_view()
+    plt.show()
 
 
 if __name__ == '__main__':
