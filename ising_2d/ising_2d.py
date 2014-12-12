@@ -30,7 +30,7 @@ def randomCandidate(size):
     return playground
 
 
-def mostEnergetic(size):
+def all_spins_up(size):
     """Generate most energetic candidate configuration of size*size."""
     playground=[]
     for i in range(size):
@@ -178,13 +178,18 @@ def main():
     magnetic_field = float(raw_input("Magnetic Field [spin]: "))
     user_steps = int(raw_input("Steps: "))
     candidate = int(raw_input("Which candidate do you want to start with? "
-        "[1: Random candidate, 2: Most Energetic Candidate, 3: Checkerboard]: "))
+        "[1: Random candidate, 2: All Spins Up, 3: Checkerboard]: "))
+    if raw_input('Type "a" for Anti-Ferromagnetic, '
+                 'otherwise ferromagnetic is assumed: ') == 'a':
+        interaction_energy = -1.0
+    else:
+        interaction_energy = 1.0
 
     # Set up candidate
     if candidate == 1:
         spin_array = randomCandidate(dimension)
     elif candidate == 2:
-        spin_array = mostEnergetic(dimension)
+        spin_array = all_spins_up(dimension)
     elif candidate == 3:
         spin_array = checkerBoard(dimension)
     else:
@@ -214,7 +219,8 @@ def main():
         for j in range(dimension**2):
             row = random.randint(0, dimension - 1)
             col = random.randint(0, dimension - 1)
-            deltaE = dE(spin_array, magnetic_field, row, col)
+            deltaE = dE(spin_array, magnetic_field,
+                        row, col, interaction_energy)
 
             if PROMPT:
                 print("delta E = {}".format(deltaE))
@@ -240,8 +246,7 @@ def main():
             canvas.display()
 
             energy, magnetization = total_E_M(spin_array, magnetic_field,
-                                              row, col)
-
+                                              row, col, interaction_energy)
             energy_data.append(energy)
             magnetization_data.append(magnetization)
 
