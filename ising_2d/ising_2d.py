@@ -5,6 +5,7 @@
 
 import math
 import matplotlib.pyplot as plt
+import matplotlib.lines as lines
 import numpy as np
 import picture
 import random
@@ -146,6 +147,19 @@ def update_line(line, y_point):
     line.set_ydata(np.append(y_data, y_point))
 
 
+def add_data(figure, data):
+    """Adds a line of y-data to a figure."""
+    ax, = figure.get_axes()
+    line = lines.Line2D(
+        [i for i in range(len(data))],
+        data)
+
+    ax.add_line(line)
+    ax.relim()
+    ax.autoscale()
+    ax.autoscale_view()
+
+
 def main():
     dimension = int(raw_input("Input size: "))
     temperature = float(raw_input("Temperature [ϵ/kB]: "))
@@ -167,10 +181,21 @@ def main():
     canvas, tiles = setup_canvas(spin_array)
     canvas.display()
 
-    # Set up sideline plots
-    fig, ax = plt.subplots()
-    line, = plt.plot([], [])
-    ax.set_ylim(0, 1)
+    # Set up plots
+    energy_figure = plt.figure()
+    energy_ax = energy_figure.add_subplot(1, 1, 1)
+    energy_ax.set_title('Energy')
+    energy_data = []
+
+    magnetization_figure = plt.figure()
+    magnetization_ax = magnetization_figure.add_subplot(1, 1, 1)
+    magnetization_ax.set_title('Magnetization')
+    magnetization_data = []
+
+    entropy_figure = plt.figure()
+    entropy_ax = entropy_figure.add_subplot(1, 1, 1)
+    entropy_ax.set_title('Entropy')
+    entropy_data = []
 
     # BEGIN THE MARKOV CHAIN
     for i in range(user_steps):
@@ -207,14 +232,28 @@ def main():
 
             energy, magnetization = total_E_M(spin_array, magnetic_field,
                                               row, col)
-            if PROMPT:
-                print(energy, magnetization)
-            update_line(line, energy)
 
-    ax.relim()
-    ax.autoscale()
-    ax.autoscale_view()
-    plt.show()
+            # Magic numbers via
+            # http://mokslasplius.lt/rizikos-fizika/files/ising-model/index-en.html
+            # Refer to function updateStatistics
+            p = (1.0 - magnetization) / 2.0
+            entropy = -1.442695 * (
+                p * math.log(p) + (1.0 - p) * math.log(1.0 - p)
+                )
+
+            energy_data.append(energy)
+            magnetization_data.append(magnetization)
+            entropy_data.append(entropy)
+
+            if PROMPT:
+                print(energy, magnetization, entropy)
+
+    add_data(energy_figure, energy_data)
+    add_data(magnetization_figure, magnetization_data)
+    add_data(entropy_figure, entropy_data)
+
+    # import pdb; pdb.set_trace()
+    plt.show(block=True)
 
 
 if __name__ == '__main__':
