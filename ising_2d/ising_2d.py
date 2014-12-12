@@ -38,6 +38,21 @@ def mostEnergetic(size):
     return playground
 
 
+def checkerBoard(size):
+    playground=[]
+    for i in range(size):
+        playground.append([])
+        for j in range(size):
+            if i%2 == 0:
+                playground[i].append(1.0 if j%2==0 else -1.0)
+            else:
+                playground[i].append(-1.0 if j%2==0 else 1.0)
+
+    # for i in range(size/2):
+    #     playground.append([1.0, -1.0])
+    return playground
+
+
 def printlist(list):
     """Print candidate 2D list in letters."""
     for row in range(list):
@@ -72,7 +87,7 @@ def dE(configuration, magnetic_field, i, j, interaction_energy=1):
 
     # The 2 factor comes from flipping one spin
     deltaE = (
-        -2.0 * (configuration[i][j] * neighbor_spins * interaction_energy) + (
+        2.0 * (configuration[i][j] * neighbor_spins * interaction_energy) + (
         (configuration[i][j] * interaction_energy * magnetic_field))
         )
 
@@ -166,13 +181,15 @@ def main():
     magnetic_field = float(raw_input("Magnetic Field [spin]: "))
     user_steps = int(raw_input("Steps: "))
     candidate = int(raw_input("Which candidate do you want to start with? "
-        "[1: Random candidate, 2: Most Energetic Candidate]: "))
+        "[1: Random candidate, 2: Most Energetic Candidate, 3: Checkerboard]: "))
 
     # Set up candidate
     if candidate == 1:
         spin_array = randomCandidate(dimension)
     elif candidate == 2:
         spin_array = mostEnergetic(dimension)
+    elif candidate == 3:
+        spin_array = checkerBoard(dimension)
     else:
         print('Invalid candidate.')
         sys.exit(1)
@@ -191,11 +208,6 @@ def main():
     magnetization_ax = magnetization_figure.add_subplot(1, 1, 1)
     magnetization_ax.set_title('Magnetization')
     magnetization_data = []
-
-    entropy_figure = plt.figure()
-    entropy_ax = entropy_figure.add_subplot(1, 1, 1)
-    entropy_ax.set_title('Entropy')
-    entropy_data = []
 
     # BEGIN THE MARKOV CHAIN
     for i in range(user_steps):
@@ -233,26 +245,16 @@ def main():
             energy, magnetization = total_E_M(spin_array, magnetic_field,
                                               row, col)
 
-            # Magic numbers via
-            # http://mokslasplius.lt/rizikos-fizika/files/ising-model/index-en.html
-            # Refer to function updateStatistics
-            p = (1.0 - magnetization) / 2.0
-            entropy = -1.442695 * (
-                p * math.log(p) + (1.0 - p) * math.log(1.0 - p)
-                )
-
             energy_data.append(energy)
             magnetization_data.append(magnetization)
-            entropy_data.append(entropy)
+            # entropy_data.append(entropy)
 
             if PROMPT:
                 print(energy, magnetization, entropy)
 
     add_data(energy_figure, energy_data)
     add_data(magnetization_figure, magnetization_data)
-    add_data(entropy_figure, entropy_data)
 
-    # import pdb; pdb.set_trace()
     plt.show(block=True)
 
 
